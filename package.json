@@ -1,0 +1,7 @@
+{
+  "name": "dajia-content-reader",
+  "private": true,
+  "type": "module",
+  "scripts": {"start": "node server.js", "worker": "node worker.js"},
+  "dependencies": {"express": "^5.1.0", "playwright": "^1.55.0"}
+}
