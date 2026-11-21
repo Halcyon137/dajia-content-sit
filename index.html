@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>大佳 · 内容日报</title>
+  <title>知阅 · 资讯中心</title>
   <style>
     :root{--ink:#202124;--muted:#7d817f;--line:#e7e4de;--paper:#fbfaf7;--accent:#c85b3f;--accent-soft:#f5e2da;--green:#376b58}
     *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei",sans-serif}
@@ -19,7 +19,7 @@
 </head>
 <body>
   <main class="shell">
-    <header class="topbar"><div class="brand"><div class="mark">大</div><div><h1>大佳</h1><span>内容日报</span></div></div><div class="toolbar"><input id="search" placeholder="搜索标题或内容"/><button id="today">今天</button><button id="membership">会员中心</button></div></header>
+    <header class="topbar"><div class="brand"><div class="mark">知</div><div><h1>知阅</h1><span>资讯中心</span></div></div><div class="toolbar"><input id="search" placeholder="搜索标题或内容"/><button id="today">今天</button><button id="membership">会员中心</button></div></header>
     <section class="member"><div><small>会员状态</small><strong>未订阅 · 订阅后查看完整内容</strong></div><button id="openPlans">选择套餐</button></section>
     <section id="plans" style="display:none"><div class="side-title">选择适合你的订阅方案</div><div class="plans"><div class="plan"><h4>新人体验</h4><div class="price">¥0.10</div><div class="per">7 天 · 约 ¥0.014/天</div><button data-plan="新人体验 ¥0.10 / 7天">选择体验</button></div><div class="plan"><h4>月套餐</h4><div class="price">¥8</div><div class="per">30 天 · 约 ¥0.27/天</div><button data-plan="月套餐 ¥8 / 30天">选择套餐</button></div><div class="plan"><h4>季度套餐</h4><div class="price">¥15</div><div class="per">90 天 · 约 ¥0.17/天</div><button data-plan="季度套餐 ¥15 / 90天">选择套餐</button></div><div class="plan recommended"><span class="recommend-label">推荐</span><h4>年套餐</h4><div class="price">¥29.90</div><div class="per">365 天 · 约 ¥0.08/天</div><button data-plan="年套餐 ¥29.90 / 365天">选择套餐</button></div><div class="paybox" id="paybox"><div class="qr" aria-label="收款二维码占位图"></div><div><h4 id="payTitle">待选择套餐</h4><p>请使用支付宝或微信扫码付款。</p><p>付款后点击下方按钮，管理员会核对订单并开通会员。</p><button id="paid">我已完成付款</button><div class="pending" id="pending">已提交人工确认，请等待管理员开通。</div></div></div></div></section>
     <section class="intro"><div><h2>最新内容</h2><p>文字与文件，按发布时间整理归档</p></div><div class="date">2026 / 11 / 17</div></section>
