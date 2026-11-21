@@ -30,6 +30,11 @@ try {
   await page.waitForTimeout(4000);
   const cards = page.locator('div').filter({ hasText: '获取于:' }).filter({ visible: true });
   const items = [];
+  const watermark = /(版权所有，侵权必究|请勿转发|转发必究|授权用户专享|未经授权禁止复制传播|内容已添加防伪标识|内容已加密保护|请放弃转发|不要尝试挑战|我可以让你转发|本文仅供授权用户阅读|严禁转发分享)/g;
+  const cleanLines = (value) => value.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
+    .filter(s => !watermark.test(s)).filter(s => !/^获取于\s*:/.test(s))
+    .filter(s => !/^(话题列表|展开全部|收起|上一页|下一页|第\s*\d+\s*页)/.test(s))
+    .filter(s => !(s.length === 1 && /[\u4e00-\u9fff，。！？、：；（）()“”‘’…—,.!?]/.test(s)));
   const seen = new Set();
   for (let i = 0; i < await cards.count() && items.length < 10; i++) {
     const card = cards.nth(i);
@@ -52,7 +57,13 @@ try {
     for (const m of cardText.matchAll(/([^\n]+\.(?:pdf|docx?|xlsx?|csv|zip|rar|txt|pptx?))\s*\n\s*([\d.]+\s*(?:KB|MB))/gi)) {
       if (!files.some(f => f.name === m[1].trim())) files.push({ name: m[1].trim(), size: m[2].trim(), url: null });
     }
-    items.push({ id: `${Date.now()}-${i}`, capturedAt: new Date().toISOString(), text: cardText, files });
+    const lines = cleanLines(cardText);
+    const meta = lines.findIndex(s => /^获取于\s*:/.test(s));
+    const content = meta >= 0 ? lines.slice(meta + 1) : lines;
+    const publishedAt = content.find(s => /\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}\/\d{1,2}/.test(s)) || '';
+    const title = content.find(s => s.length >= 5 && !/^\d+$/.test(s) && !/^看多君/.test(s)) || '抓取内容';
+    const body = content.filter(s => s !== title && s !== publishedAt && !/^看多君/.test(s) && !/^\d+$/.test(s));
+    items.push({ id: `${Date.now()}-${i}`, capturedAt: new Date().toISOString(), publishedAt, title, text: body.join('\n'), files });
   }
   const existing = fs.existsSync(output) ? JSON.parse(fs.readFileSync(output, 'utf8')) : [];
   const merged = [...items, ...existing].filter((item, index, all) => index === all.findIndex(x => x.text === item.text)).slice(0, 10);
