@@ -30,7 +30,7 @@ try {
   await page.waitForTimeout(4000);
   const cards = page.locator('div').filter({ hasText: '获取于:' }).filter({ visible: true });
   const items = [];
-  const watermark = /(版权所有，侵权必究|请勿转发|转发必究|授权用户专享|未经授权禁止复制传播|内容已添加防伪标识|内容已加密保护|请放弃转发|不要尝试挑战|我可以让你转发|本文仅供授权用户阅读|严禁转发分享)/g;
+  const watermark = /(版权所有，侵权必究|请勿转发|转发必究|授权用户专享|未经授权禁止复制传播|内容已添加防伪标识|内容已加密保护|请放弃转发|不要尝试挑战|我可以让你转发|本文仅供授权用户阅读|严禁转发分享)/;
   const cleanLines = (value) => value.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
     .filter(s => !watermark.test(s)).filter(s => !/^获取于\s*:/.test(s))
     .filter(s => !/^(话题列表|展开全部|收起|上一页|下一页|第\s*\d+\s*页)/.test(s))
