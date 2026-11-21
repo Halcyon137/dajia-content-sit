@@ -38,7 +38,7 @@ try {
     .filter(s => !/\.(pdf|docx?|xlsx?|csv|zip|rar|txt|pptx?)(\s|$)/i.test(s))
     .filter(s => !/^(下载|查看|附件|文件)\b|下载\s*\d+\s*次|\d+(?:\.\d+)?\s*(?:KB|MB)\b/i.test(s))
     .filter(s => !/^(话题列表|展开全部|收起|上一页|下一页|第\s*\d+\s*页)/.test(s))
-    .filter(s => !(s.length === 1 && /[\u4e00-\u9fff，。！？、：；（）()“”‘’…—,.!?]/.test(s)));
+    .filter(s => !(s.length === 1 && /[\u4e00-\u9fff]/.test(s)));
   const seen = new Set();
   for (let i = 0; i < await cards.count() && items.length < 10; i++) {
     const card = cards.nth(i);
@@ -83,7 +83,11 @@ try {
     const publishedAt = content.find(s => /\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}\/\d{1,2}/.test(s)) || '';
     const title = content.find(s => s.length >= 5 && !/^\d+$/.test(s) && !/^看多君/.test(s)) || '抓取内容';
     const body = content.filter(s => s !== title && s !== publishedAt && !/^看多君/.test(s) && !/^\d+$/.test(s));
-    items.push({ id: `${Date.now()}-${i}`, capturedAt: new Date().toISOString(), publishedAt, title, text: body.join('\n'), files });
+    const normalizedText = body.join('').replace(/\s+/g, ' ').trim();
+    const contentKey = `${publishedAt}|${title}|${normalizedText.slice(0, 600)}`;
+    if (seen.has(contentKey)) continue;
+    seen.add(contentKey);
+    items.push({ id: `${Date.now()}-${i}`, capturedAt: new Date().toISOString(), publishedAt, title, text: normalizedText, files });
   }
   const existing = fs.existsSync(output) ? JSON.parse(fs.readFileSync(output, 'utf8')) : [];
   const merged = [...items, ...existing].filter((item, index, all) => index === all.findIndex(x => x.text === item.text)).slice(0, 10);
