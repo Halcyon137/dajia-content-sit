@@ -51,14 +51,14 @@ try {
     const links = await card.locator('a, [role="link"], button').all();
     const files = [];
     const downloadButtons = card.getByRole('button', { name: /下载/ });
-    for (let j = 0; j < await downloadButtons.count(); j++) {
+    for (let j = 0; j < Math.min(await downloadButtons.count(), 12); j++) {
       const button = downloadButtons.nth(j);
       const rowText = (await button.locator('xpath=..').innerText().catch(() => '')).trim();
       const nameMatch = rowText.match(/([^\n]+\.(?:pdf|docx?|xlsx?|csv|zip|rar|txt|pptx?))/i);
       const name = nameMatch?.[1]?.trim() || `attachment-${items.length + 1}-${j}.bin`;
       const safeName = name.replace(/[\\/:*?"<>|]/g, '_');
       try {
-        const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
+        const downloadPromise = page.waitForEvent('download', { timeout: 4000 });
         await button.click();
         const download = await downloadPromise;
         const dest = path.join(attachmentDir, safeName);
