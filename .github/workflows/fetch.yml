@@ -3,8 +3,8 @@ name: Fetch site data
 on:
   workflow_dispatch:
   schedule:
-    # 每 6 小时运行一次：UTC 00:00、06:00、12:00、18:00
-    - cron: '0 */6 * * *'
+    # 每天 3 个低频运行窗口；窗口内再随机延迟，分散服务器负载
+    - cron: '0 1,9,17 * * *'
 
 concurrency:
   group: content-fetch
@@ -23,6 +23,11 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Add load-spreading delay
+        run: |
+          delay=$((RANDOM % 5400))
+          echo "Waiting ${delay}s before the scheduled fetch"
+          sleep "$delay"
       - run: node scrape.js
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
