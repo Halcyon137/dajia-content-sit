@@ -6,6 +6,8 @@ const url = process.env.SITE_URL;
 const username = process.env.SITE_USERNAME;
 const password = process.env.SITE_PASSWORD;
 const output = path.resolve('data.json');
+const attachmentDir = path.resolve('attachments');
+fs.mkdirSync(attachmentDir, { recursive: true });
 
 if (!url || !username || !password) throw new Error('缺少 SITE_URL、SITE_USERNAME 或 SITE_PASSWORD');
 
@@ -48,6 +50,22 @@ try {
     if (await expand.count()) await expand.click().catch(() => {});
     const links = await card.locator('a, [role="link"], button').all();
     const files = [];
+    const downloadButtons = card.getByRole('button', { name: /下载/ });
+    for (let j = 0; j < await downloadButtons.count(); j++) {
+      const button = downloadButtons.nth(j);
+      const rowText = (await button.locator('xpath=..').innerText().catch(() => '')).trim();
+      const nameMatch = rowText.match(/([^\n]+\.(?:pdf|docx?|xlsx?|csv|zip|rar|txt|pptx?))/i);
+      const name = nameMatch?.[1]?.trim() || `attachment-${items.length + 1}-${j}.bin`;
+      const safeName = name.replace(/[\\/:*?"<>|]/g, '_');
+      try {
+        const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
+        await button.click();
+        const download = await downloadPromise;
+        const dest = path.join(attachmentDir, safeName);
+        await download.saveAs(dest);
+        files.push({ name: safeName, url: `attachments/${encodeURIComponent(safeName)}`, size: fs.statSync(dest).size });
+      } catch {}
+    }
     for (const link of links) {
       const href = await link.getAttribute('href');
       const download = await link.getAttribute('download');
