@@ -74,3 +74,5 @@ fetch('data.json').then(r=>r.ok?r.json():null).then(payload=>{
 
 
 
+
+<script>fetch('data.json').then(r=>r.json()).then(d=>{const admin=new URLSearchParams(location.search).get('admin')==='1';const ok=admin||localStorage.getItem('memberActive')==='1';if(!ok)return;const feed=document.getElementById('feed');if(!feed)return;feed.innerHTML=(d.items||[]).map(x=>`<article class=entry><div class=entry-meta><span class=dot></span>${x.publishedAt||''}</div><h3>${x.title||''}</h3><p>${x.content||x.text||''}</p></article>`).join('');});</script>
